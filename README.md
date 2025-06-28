@@ -12,9 +12,9 @@
 <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
 </p>
 
-## 📋 Tentang SETUKPA
+## 📋 Tentang Sistem Ini
 
-SETUKPA (Sistem Evaluasi Tugas Kinerja Pegawai dan Akademik) adalah aplikasi web berbasis Laravel untuk mengelola data akademik siswa, mata pelajaran, dan penilaian. Sistem ini dirancang untuk memudahkan institusi pendidikan dalam mengelola proses akademik secara digital dan efisien.
+SIAKAD SETUKPA (Sistem Informasi Akademik - Sekolah Pembentukan Perwira) adalah aplikasi web berbasis Laravel untuk mengelola data akademik siswa, mata pelajaran, dan penilaian. Sistem ini dirancang untuk memudahkan institusi pendidikan dalam mengelola proses akademik secara digital dan efisien.
 
 ### ✨ Fitur Utama
 
