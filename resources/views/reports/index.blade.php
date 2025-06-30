@@ -192,7 +192,7 @@
                             @foreach($students as $index => $student)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $student->nim }}</td>
+                                <td>{{ $student->student_number }}</td>
                                 <td>{{ $student->name }}</td>
                                 <td>{{ $student->email }}</td>
                                 <td>{{ $student->scores_count }}</td>

@@ -77,9 +77,13 @@
                                 <td>{{ $student->name }}</td>
                             </tr>
                             <tr>
+                                <td class="font-weight-bold text-gray-600">Email:</td>
+                                <td>{{ $student->email }}</td>
+                            </tr>
+                            <tr>
                                 <td class="font-weight-bold text-gray-600">Jenis Kelamin:</td>
                                 <td>
-                                    @if($student->gender === 'L')
+                                    @if($student->gender === 'Laki-laki')
                                         <span class="badge badge-info">Laki-laki</span>
                                     @else
                                         <span class="badge badge-pink">Perempuan</span>
@@ -96,6 +100,28 @@
                                         <span class="text-muted">Belum diisi</span>
                                     @endif
                                 </td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold text-gray-600">Nomor Telepon:</td>
+                                <td>{{ $student->phone ?? 'Belum diisi' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold text-gray-600">Status:</td>
+                                <td>
+                                    @if($student->status == 'Aktif')
+                                        <span class="badge badge-success">{{ $student->status }}</span>
+                                    @elseif($student->status == 'Lulus')
+                                        <span class="badge badge-primary">{{ $student->status }}</span>
+                                    @elseif($student->status == 'Cuti')
+                                        <span class="badge badge-warning">{{ $student->status }}</span>
+                                    @else
+                                        <span class="badge badge-secondary">{{ $student->status }}</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold text-gray-600">Alamat:</td>
+                                <td>{{ $student->address ?? 'Belum diisi' }}</td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold text-gray-600">Terdaftar:</td>
@@ -226,7 +252,22 @@
                                             <span class="font-weight-bold text-primary">{{ number_format($score->score, 1) }}</span>
                                         </td>
                                         <td class="text-center">
-                                            <span class="badge badge-{{ $score->grade_color }}">{{ $score->grade }}</span>
+                                            @php
+                                                $grade = '';
+                                                $gradeColor = '';
+                                                if ($score->score >= 85) { $grade = 'A'; $gradeColor = 'success'; }
+                                                elseif ($score->score >= 80) { $grade = 'A-'; $gradeColor = 'success'; }
+                                                elseif ($score->score >= 75) { $grade = 'B+'; $gradeColor = 'warning'; }
+                                                elseif ($score->score >= 70) { $grade = 'B'; $gradeColor = 'warning'; }
+                                                elseif ($score->score >= 65) { $grade = 'B-'; $gradeColor = 'warning'; }
+                                                elseif ($score->score >= 60) { $grade = 'C+'; $gradeColor = 'info'; }
+                                                elseif ($score->score >= 55) { $grade = 'C'; $gradeColor = 'info'; }
+                                                elseif ($score->score >= 50) { $grade = 'C-'; $gradeColor = 'info'; }
+                                                elseif ($score->score >= 45) { $grade = 'D+'; $gradeColor = 'danger'; }
+                                                elseif ($score->score >= 40) { $grade = 'D'; $gradeColor = 'danger'; }
+                                                else { $grade = 'E'; $gradeColor = 'danger'; }
+                                            @endphp
+                                            <span class="badge badge-{{ $gradeColor }}">{{ $grade }}</span>
                                         </td>
                                         <td>
                                             {{ $score->teacher->name ?? 'N/A' }}
@@ -252,6 +293,18 @@
                                                 <a href="{{ route('scores.edit', $score) }}" class="btn btn-sm btn-outline-warning" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
+                                                @endcan
+                                                @can('delete', $score)
+                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDeleteScore({{ $score->id }})" title="Hapus">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                                @endcan
+                                            </div>
+                                        </td>
+                                        @endcanany
+                                    </tr>
+                                    @endforeach
+                                </tbody>
                                                 @endcan
                                                 @can('delete', $score)
                                                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDeleteScore({{ $score->id }})" title="Hapus">

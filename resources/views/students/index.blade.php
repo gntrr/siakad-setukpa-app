@@ -51,12 +51,11 @@
                                 <input type="text" class="form-control" name="search" 
                                        value="{{ $search ?? '' }}" placeholder="Cari nama atau NIM...">
                             </div>
-                            <div class="col-md-3">
-                                <select class="form-control" name="gender">
-                                    <option value="">Semua Gender</option>
-                                    <option value="L" {{ ($gender ?? '') == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                                    <option value="P" {{ ($gender ?? '') == 'P' ? 'selected' : '' }}>Perempuan</option>
-                                </select>
+                            <div class="col-md-3">                            <select class="form-control" name="gender">
+                                <option value="">Semua Gender</option>
+                                <option value="Laki-laki" {{ ($gender ?? '') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                <option value="Perempuan" {{ ($gender ?? '') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                            </select>
                             </div>
                             <div class="col-md-2">
                                 <select class="form-control" name="sort_by">
@@ -84,11 +83,11 @@
                             <thead class="table-light">
                                 <tr>
                                     <th width="5%">No</th>
-                                    <th width="15%">NIM</th>
+                                    <th width="15%">Nomor Induk</th>
                                     <th width="25%">Nama Lengkap</th>
-                                    <th width="15%">Gender</th>
-                                    <th width="15%">Jumlah Nilai</th>
-                                    <th width="10%">Tanggal Daftar</th>
+                                    <th width="20%">Email</th>
+                                    <th width="10%">Gender</th>
+                                    <th width="10%">Status</th>
                                     <th width="15%">Aksi</th>
                                 </tr>
                             </thead>
@@ -96,11 +95,27 @@
                                 @forelse($students as $index => $student)
                                 <tr>
                                     <td>{{ $students->firstItem() + $index }}</td>
-                                    <td>{{ $student->student_number }}</td>
+                                    <td><strong>{{ $student->student_number }}</strong></td>
                                     <td>{{ $student->name }}</td>
-                                    <td>{{ $student->gender == 'L' ? 'Laki-laki' : 'Perempuan' }}</td>
-                                    <td>{{ $student->scores_count }} nilai</td>
-                                    <td>{{ $student->created_at->format('d/m/Y') }}</td>
+                                    <td>{{ $student->email }}</td>
+                                    <td>
+                                        @if($student->gender == 'Laki-laki')
+                                            <span class="badge badge-info">Laki-laki</span>
+                                        @else
+                                            <span class="badge badge-pink">Perempuan</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($student->status == 'Aktif')
+                                            <span class="badge badge-success">{{ $student->status }}</span>
+                                        @elseif($student->status == 'Lulus')
+                                            <span class="badge badge-primary">{{ $student->status }}</span>
+                                        @elseif($student->status == 'Cuti')
+                                            <span class="badge badge-warning">{{ $student->status }}</span>
+                                        @else
+                                            <span class="badge badge-secondary">{{ $student->status }}</span>
+                                        @endif
+                                    </td>
                                     <td>
                                         <div class="btn-group" role="group">
                                             @can('view', $student)
@@ -173,4 +188,13 @@
     alert('{{ session("error") }}');
 @endif
 </script>
+@endpush
+
+@push('styles')
+<style>
+    .badge-pink {
+        background-color: #e91e63;
+        color: white;
+    }
+</style>
 @endpush

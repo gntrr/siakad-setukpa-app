@@ -25,16 +25,16 @@
                         @csrf
                         
                         <div class="row">
-                            <!-- NIM -->
+                            <!-- Student Number -->
                             <div class="col-md-6 mb-3">
-                                <label for="nim" class="form-label">NIM <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('nim') is-invalid @enderror" 
-                                       id="nim" name="nim" value="{{ old('nim') }}" 
-                                       placeholder="Contoh: 2024001" required>
-                                @error('nim')
+                                <label for="student_number" class="form-label">Nomor Induk Siswa <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('student_number') is-invalid @enderror" 
+                                       id="student_number" name="student_number" value="{{ old('student_number') }}" 
+                                       placeholder="Contoh: STK2024001" required>
+                                @error('student_number')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                                <div class="form-text">NIM harus unik dan tidak boleh kosong</div>
+                                <div class="form-text">Nomor induk siswa harus unik dan tidak boleh kosong</div>
                             </div>
 
                             <!-- Nama Lengkap -->
@@ -55,57 +55,13 @@
                                 <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                                 <input type="email" class="form-control @error('email') is-invalid @enderror" 
                                        id="email" name="email" value="{{ old('email') }}" 
-                                       placeholder="contoh@email.com" required>
+                                       placeholder="contoh@setukpa.ac.id" required>
                                 @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            <!-- Kelas -->
-                            <div class="col-md-6 mb-3">
-                                <label for="class" class="form-label">Kelas</label>
-                                <select class="form-control @error('class') is-invalid @enderror" id="class" name="class">
-                                    <option value="">-- Pilih Kelas --</option>
-                                    <option value="1A" {{ old('class') == '1A' ? 'selected' : '' }}>Kelas 1A</option>
-                                    <option value="1B" {{ old('class') == '1B' ? 'selected' : '' }}>Kelas 1B</option>
-                                    <option value="2A" {{ old('class') == '2A' ? 'selected' : '' }}>Kelas 2A</option>
-                                    <option value="2B" {{ old('class') == '2B' ? 'selected' : '' }}>Kelas 2B</option>
-                                    <option value="3A" {{ old('class') == '3A' ? 'selected' : '' }}>Kelas 3A</option>
-                                    <option value="3B" {{ old('class') == '3B' ? 'selected' : '' }}>Kelas 3B</option>
-                                </select>
-                                @error('class')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <!-- Tanggal Lahir -->
-                            <div class="col-md-6 mb-3">
-                                <label for="birth_date" class="form-label">Tanggal Lahir</label>
-                                <input type="date" class="form-control @error('birth_date') is-invalid @enderror" 
-                                       id="birth_date" name="birth_date" value="{{ old('birth_date') }}">
-                                @error('birth_date')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <!-- Jenis Kelamin -->
-                            <div class="col-md-6 mb-3">
-                                <label for="gender" class="form-label">Jenis Kelamin</label>
-                                <select class="form-control @error('gender') is-invalid @enderror" id="gender" name="gender">
-                                    <option value="">-- Pilih Jenis Kelamin --</option>
-                                    <option value="L" {{ old('gender') == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                                    <option value="P" {{ old('gender') == 'P' ? 'selected' : '' }}>Perempuan</option>
-                                </select>
-                                @error('gender')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <!-- Nomor Telepon -->
+                            <!-- Phone -->
                             <div class="col-md-6 mb-3">
                                 <label for="phone" class="form-label">Nomor Telepon</label>
                                 <input type="tel" class="form-control @error('phone') is-invalid @enderror" 
@@ -115,13 +71,42 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                        </div>
 
+                        <div class="row">
+                            <!-- Tanggal Lahir -->
+                            <div class="col-md-6 mb-3">
+                                <label for="birth_date" class="form-label">Tanggal Lahir <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control @error('birth_date') is-invalid @enderror" 
+                                       id="birth_date" name="birth_date" value="{{ old('birth_date') }}" required>
+                                @error('birth_date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Jenis Kelamin -->
+                            <div class="col-md-6 mb-3">
+                                <label for="gender" class="form-label">Jenis Kelamin <span class="text-danger">*</span></label>
+                                <select class="form-control @error('gender') is-invalid @enderror" id="gender" name="gender" required>
+                                    <option value="">-- Pilih Jenis Kelamin --</option>
+                                    <option value="Laki-laki" {{ old('gender') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                    <option value="Perempuan" {{ old('gender') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                </select>
+                                @error('gender')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <!-- Status -->
                             <div class="col-md-6 mb-3">
                                 <label for="status" class="form-label">Status</label>
                                 <select class="form-control @error('status') is-invalid @enderror" id="status" name="status">
-                                    <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Aktif</option>
-                                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Tidak Aktif</option>
+                                    <option value="Aktif" {{ old('status', 'Aktif') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                                    <option value="Tidak Aktif" {{ old('status') == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
+                                    <option value="Lulus" {{ old('status') == 'Lulus' ? 'selected' : '' }}>Lulus</option>
+                                    <option value="Cuti" {{ old('status') == 'Cuti' ? 'selected' : '' }}>Cuti</option>
                                 </select>
                                 @error('status')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -163,18 +148,20 @@
                 <div class="card-body">
                     <h6 class="text-primary">Field Wajib:</h6>
                     <ul class="list-unstyled">
-                        <li><i class="fas fa-check text-success mr-2"></i>NIM</li>
+                        <li><i class="fas fa-check text-success mr-2"></i>Nomor Induk Siswa</li>
                         <li><i class="fas fa-check text-success mr-2"></i>Nama Lengkap</li>
                         <li><i class="fas fa-check text-success mr-2"></i>Email</li>
+                        <li><i class="fas fa-check text-success mr-2"></i>Tanggal Lahir</li>
+                        <li><i class="fas fa-check text-success mr-2"></i>Jenis Kelamin</li>
                     </ul>
 
                     <hr>
 
                     <h6 class="text-primary">Catatan:</h6>
                     <ul class="list-unstyled small">
-                        <li><i class="fas fa-info-circle text-info mr-2"></i>NIM harus berupa angka dan unik</li>
+                        <li><i class="fas fa-info-circle text-info mr-2"></i>Nomor induk siswa harus unik</li>
                         <li><i class="fas fa-info-circle text-info mr-2"></i>Email harus valid dan unik</li>
-                        <li><i class="fas fa-info-circle text-info mr-2"></i>Kelas bisa dikosongkan jika belum ditentukan</li>
+                        <li><i class="fas fa-info-circle text-info mr-2"></i>Phone dan alamat bersifat opsional</li>
                         <li><i class="fas fa-info-circle text-info mr-2"></i>Status default adalah Aktif</li>
                     </ul>
 
@@ -197,16 +184,16 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Auto-format NIM input
-    const nimInput = document.getElementById('nim');
-    nimInput.addEventListener('input', function(e) {
-        // Remove non-numeric characters
-        let value = e.target.value.replace(/\D/g, '');
+    // Auto-format student number input
+    const studentNumberInput = document.getElementById('student_number');
+    studentNumberInput.addEventListener('input', function(e) {
+        // Allow alphanumeric characters for student number
+        let value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
         e.target.value = value;
         
-        // Check if NIM already exists
-        if (value.length >= 4) {
-            checkNIMExists(value);
+        // Check if student number already exists
+        if (value.length >= 3) {
+            // checkStudentNumberExists(value);
         }
     });
 
@@ -273,23 +260,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function checkNIMExists(nim) {
-    fetch(`/api/students/check-nim?nim=${nim}`)
-        .then(response => response.json())
-        .then(data => {
-            const nimInput = document.getElementById('nim');
-            if (data.exists) {
-                nimInput.classList.add('is-invalid');
-                showFieldError('nim', 'NIM sudah digunakan');
-            } else {
-                nimInput.classList.remove('is-invalid');
-                hideFieldError('nim');
-            }
-        })
-        .catch(error => {
-            console.error('Error checking NIM:', error);
-        });
-}
+// function checkNIMExists(nim) {
+//     fetch(`/api/students/check-nim?nim=${nim}`)
+//         .then(response => response.json())
+//         .then(data => {
+//             const nimInput = document.getElementById('nim');
+//             if (data.exists) {
+//                 nimInput.classList.add('is-invalid');
+//                 showFieldError('nim', 'NIM sudah digunakan');
+//             } else {
+//                 nimInput.classList.remove('is-invalid');
+//                 hideFieldError('nim');
+//             }
+//         })
+//         .catch(error => {
+//             console.error('Error checking NIM:', error);
+//         });
+// }
 
 function displayValidationErrors(errors) {
     // Clear previous errors

@@ -15,8 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('student_number', 20)->unique();
             $table->string('name', 100);
-            $table->enum('gender', ['Laki-laki', 'Perempuan']);
+            $table->string('email')->unique();
             $table->date('birth_date');
+            $table->enum('gender', ['Laki-laki', 'Perempuan']);
+            $table->string('phone', 15)->nullable();
+            $table->string('status')->default('Aktif');
+            $table->string('address', 255)->nullable();
             $table->timestamps();
         });
     }

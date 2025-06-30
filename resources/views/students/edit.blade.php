@@ -46,7 +46,7 @@
                                 <label for="student_number" class="form-label">Nomor Induk Siswa <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('student_number') is-invalid @enderror" 
                                        id="student_number" name="student_number" value="{{ old('student_number', $student->student_number) }}" 
-                                       placeholder="Contoh: 2024001" required>
+                                       placeholder="Contoh: STK2024001" required>
                                 @error('student_number')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -60,6 +60,30 @@
                                        id="name" name="name" value="{{ old('name', $student->name) }}" 
                                        placeholder="Masukkan nama lengkap" required>
                                 @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Email -->
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                                       id="email" name="email" value="{{ old('email', $student->email) }}" 
+                                       placeholder="contoh@setukpa.ac.id" required>
+                                @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Nomor Telepon</label>
+                                <input type="tel" class="form-control @error('phone') is-invalid @enderror" 
+                                       id="phone" name="phone" value="{{ old('phone', $student->phone) }}" 
+                                       placeholder="Contoh: 08123456789">
+                                @error('phone')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -91,6 +115,33 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <!-- Status -->
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-control @error('status') is-invalid @enderror" id="status" name="status">
+                                    <option value="Aktif" {{ old('status', $student->status) == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                                    <option value="Tidak Aktif" {{ old('status', $student->status) == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
+                                    <option value="Lulus" {{ old('status', $student->status) == 'Lulus' ? 'selected' : '' }}>Lulus</option>
+                                    <option value="Cuti" {{ old('status', $student->status) == 'Cuti' ? 'selected' : '' }}>Cuti</option>
+                                </select>
+                                @error('status')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Alamat -->
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Alamat</label>
+                            <textarea class="form-control @error('address') is-invalid @enderror" 
+                                      id="address" name="address" rows="3" 
+                                      placeholder="Masukkan alamat lengkap">{{ old('address', $student->address) }}</textarea>
+                            @error('address')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <!-- Action Buttons -->
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{{ route('students.index') }}" class="btn btn-secondary mr-2">
@@ -116,6 +167,7 @@
                     <ul class="list-unstyled">
                         <li><i class="fas fa-check text-success mr-2"></i>Nomor Induk Siswa</li>
                         <li><i class="fas fa-check text-success mr-2"></i>Nama Lengkap</li>
+                        <li><i class="fas fa-check text-success mr-2"></i>Email</li>
                         <li><i class="fas fa-check text-success mr-2"></i>Jenis Kelamin</li>
                         <li><i class="fas fa-check text-success mr-2"></i>Tanggal Lahir</li>
                     </ul>
@@ -125,8 +177,9 @@
                     <h6 class="text-primary">Catatan:</h6>
                     <ul class="list-unstyled small">
                         <li><i class="fas fa-info-circle text-info mr-2"></i>Nomor induk siswa harus unik</li>
+                        <li><i class="fas fa-info-circle text-info mr-2"></i>Email harus valid dan unik</li>
                         <li><i class="fas fa-info-circle text-info mr-2"></i>Tanggal lahir harus sebelum hari ini</li>
-                        <li><i class="fas fa-info-circle text-info mr-2"></i>Jenis kelamin harus dipilih</li>
+                        <li><i class="fas fa-info-circle text-info mr-2"></i>Phone dan alamat bersifat opsional</li>
                     </ul>
 
                     <hr>
