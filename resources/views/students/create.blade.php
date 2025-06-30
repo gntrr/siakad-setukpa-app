@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Check if NIM already exists
         if (value.length >= 4) {
-            checkNIMExists(value);
+            // checkNIMExists(value);
         }
     });
 
@@ -273,23 +273,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function checkNIMExists(nim) {
-    fetch(`/api/students/check-nim?nim=${nim}`)
-        .then(response => response.json())
-        .then(data => {
-            const nimInput = document.getElementById('nim');
-            if (data.exists) {
-                nimInput.classList.add('is-invalid');
-                showFieldError('nim', 'NIM sudah digunakan');
-            } else {
-                nimInput.classList.remove('is-invalid');
-                hideFieldError('nim');
-            }
-        })
-        .catch(error => {
-            console.error('Error checking NIM:', error);
-        });
-}
+// function checkNIMExists(nim) {
+//     fetch(`/api/students/check-nim?nim=${nim}`)
+//         .then(response => response.json())
+//         .then(data => {
+//             const nimInput = document.getElementById('nim');
+//             if (data.exists) {
+//                 nimInput.classList.add('is-invalid');
+//                 showFieldError('nim', 'NIM sudah digunakan');
+//             } else {
+//                 nimInput.classList.remove('is-invalid');
+//                 hideFieldError('nim');
+//             }
+//         })
+//         .catch(error => {
+//             console.error('Error checking NIM:', error);
+//         });
+// }
 
 function displayValidationErrors(errors) {
     // Clear previous errors
