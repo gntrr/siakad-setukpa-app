@@ -64,7 +64,7 @@
                             <!-- Kelas -->
                             <div class="col-md-6 mb-3">
                                 <label for="class" class="form-label">Kelas</label>
-                                <select class="form-select @error('class') is-invalid @enderror" id="class" name="class">
+                                <select class="form-control @error('class') is-invalid @enderror" id="class" name="class">
                                     <option value="">-- Pilih Kelas --</option>
                                     <option value="1A" {{ old('class') == '1A' ? 'selected' : '' }}>Kelas 1A</option>
                                     <option value="1B" {{ old('class') == '1B' ? 'selected' : '' }}>Kelas 1B</option>
@@ -93,7 +93,7 @@
                             <!-- Jenis Kelamin -->
                             <div class="col-md-6 mb-3">
                                 <label for="gender" class="form-label">Jenis Kelamin</label>
-                                <select class="form-select @error('gender') is-invalid @enderror" id="gender" name="gender">
+                                <select class="form-control @error('gender') is-invalid @enderror" id="gender" name="gender">
                                     <option value="">-- Pilih Jenis Kelamin --</option>
                                     <option value="L" {{ old('gender') == 'L' ? 'selected' : '' }}>Laki-laki</option>
                                     <option value="P" {{ old('gender') == 'P' ? 'selected' : '' }}>Perempuan</option>
@@ -119,7 +119,7 @@
                             <!-- Status -->
                             <div class="col-md-6 mb-3">
                                 <label for="status" class="form-label">Status</label>
-                                <select class="form-select @error('status') is-invalid @enderror" id="status" name="status">
+                                <select class="form-control @error('status') is-invalid @enderror" id="status" name="status">
                                     <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Aktif</option>
                                     <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Tidak Aktif</option>
                                 </select>

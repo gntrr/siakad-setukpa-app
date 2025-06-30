@@ -76,7 +76,7 @@
         }
 
         .form-floating > .form-control, 
-        .form-floating > .form-select {
+        .form-floating > .form-control {
             border: 2px solid #e2e8f0;
             border-radius: 12px;
             padding: 1rem 0.75rem;
@@ -85,7 +85,7 @@
         }
 
         .form-floating > .form-control:focus,
-        .form-floating > .form-select:focus {
+        .form-floating > .form-control:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
         }
@@ -224,7 +224,7 @@
 
                     <!-- Role Selection -->
                     <div class="form-floating">
-                        <select id="role" class="form-select @error('role') is-invalid @enderror" 
+                        <select id="role" class="form-control @error('role') is-invalid @enderror" 
                                 name="role" required>
                             <option value="">Choose Role</option>
                             <option value="dosen" {{ old('role') == 'dosen' ? 'selected' : '' }}>Dosen (Teacher)</option>

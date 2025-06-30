@@ -52,7 +52,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="gender" class="form-label">Gender</label>
-                            <select class="form-select" id="gender" name="gender">
+                            <select class="form-control" id="gender" name="gender">
                                 <option value="">-- Pilih Jenis Kelamin --</option>
                                 <option value="Laki-laki" {{ old('gender', $student->gender) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
                                 <option value="Perempuan" {{ old('gender', $student->gender) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
