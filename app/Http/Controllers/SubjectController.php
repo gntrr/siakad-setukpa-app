@@ -68,20 +68,32 @@ class SubjectController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'data' => $subject,
-                'message' => 'Subject created successfully'
-            ], 201);
+            // Check if this is an API request
+            if ($this->isApiRequest($request)) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $subject,
+                    'message' => 'Subject created successfully'
+                ]);
+            }
+
+            // For web requests, redirect to the index page
+            return redirect()->route('subjects.index')->with('success', 'Subject created successfully');
 
         } catch (\Exception $e) {
             DB::rollBack();
             
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create subject',
-                'error' => $e->getMessage()
-            ], 500);
+            // Check if this is an API request
+            if ($this->isApiRequest($request)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to create subject',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+
+            // Web request error handling
+            return redirect()->back()->withErrors(['error' => 'Failed to create subject: ' . $e->getMessage()]);
         }
     }
 
@@ -134,20 +146,32 @@ class SubjectController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'data' => $subject->fresh(),
-                'message' => 'Subject updated successfully'
-            ]);
+            // Check if this is an API request
+            if ($this->isApiRequest($request)) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $subject->fresh(),
+                    'message' => 'Subject updated successfully'
+                ]);
+            }
+
+            // For web requests, redirect to the index page
+            return redirect()->route('subjects.index')->with('success', 'Subject updated successfully');
 
         } catch (\Exception $e) {
             DB::rollBack();
             
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update subject',
-                'error' => $e->getMessage()
-            ], 500);
+            // Check if this is an API request
+            if ($this->isApiRequest($request)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to update subject',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+
+            // Web request error handling
+            return redirect()->back()->withErrors(['error' => 'Failed to update subject: ' . $e->getMessage()]);
         }
     }
 
@@ -161,29 +185,47 @@ class SubjectController extends Controller
 
             // Check if subject has scores
             if ($subject->scores()->exists()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Cannot delete subject with existing scores. Please delete scores first.'
-                ], 422);
+                // API request response
+                if (request()->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Cannot delete subject with existing scores. Please delete scores first.'
+                    ], 422);
+                }
+
+                // Web request error handling
+                return redirect()->back()->withErrors(['error' => 'Cannot delete subject with existing scores. Please delete scores first.']);
             }
 
             $subject->delete();
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Subject deleted successfully'
-            ]);
+            // Check if this is an API request
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Subject deleted successfully'
+                ]);
+            }
+
+            // For web requests, redirect to the index page
+            return redirect()->route('subjects.index')->with('success', 'Subject deleted successfully');
 
         } catch (\Exception $e) {
             DB::rollBack();
             
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete subject',
-                'error' => $e->getMessage()
-            ], 500);
+            // Check if this is an API request
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to delete subject',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+
+            // Web request error handling
+            return redirect()->back()->withErrors(['error' => 'Failed to delete subject: ' . $e->getMessage()]);
         }
     }
 

@@ -443,42 +443,56 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Show success message if any
     @if(session('success'))
-        showAlert('success', '{{ session("success") }}');
+        alert('{{ session("success") }}');
     @endif
 
     // Show error message if any  
     @if(session('error'))
-        showAlert('error', '{{ session("error") }}');
+        alert('{{ session("error") }}');
     @endif
 });
 
 function confirmDelete() {
-    $('#deleteModal').modal('show');
+    if (typeof $ !== 'undefined' && $.fn.modal) {
+        $('#deleteModal').modal('show');
+    } else {
+        // Fallback untuk browser confirmation
+        if (confirm('Apakah Anda yakin ingin menghapus siswa ini? Tindakan ini akan menghapus semua data terkait siswa termasuk nilai-nilainya dan tidak dapat dibatalkan.')) {
+            // Submit form langsung
+            document.querySelector('#deleteModal form').submit();
+        }
+    }
 }
 
 function confirmDeleteScore(scoreId) {
-    const form = document.getElementById('deleteScoreForm');
-    form.action = `/scores/${scoreId}`;
-    $('#deleteScoreModal').modal('show');
-}
-
-function showAlert(type, message) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
-    alertDiv.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>
-        ${message}
-        <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    `;
-    
-    const container = document.querySelector('.container-fluid');
-    container.insertBefore(alertDiv, container.firstChild);
-    
-    setTimeout(() => {
-        alertDiv.remove();
-    }, 5000);
+    if (typeof $ !== 'undefined' && $.fn.modal) {
+        const form = document.getElementById('deleteScoreForm');
+        form.action = `/scores/${scoreId}`;
+        $('#deleteScoreModal').modal('show');
+    } else {
+        // Fallback untuk browser confirmation
+        if (confirm('Apakah Anda yakin ingin menghapus nilai ini? Tindakan ini tidak dapat dibatalkan.')) {
+            // Create and submit form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/scores/${scoreId}`;
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            const methodField = document.createElement('input');
+            methodField.type = 'hidden';
+            methodField.name = '_method';
+            methodField.value = 'DELETE';
+            
+            form.appendChild(csrfToken);
+            form.appendChild(methodField);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
 }
 </script>
 @endpush

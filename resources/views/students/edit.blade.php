@@ -203,83 +203,31 @@
 document.addEventListener('DOMContentLoaded', function() {
     const currentStudentNumber = '{{ $student->student_number }}';
     
-    // Auto-format student number input (only numbers)
+    // Auto-format student number input
     const studentNumberInput = document.getElementById('student_number');
-    studentNumberInput.addEventListener('input', function(e) {
-        // Allow alphanumeric characters for student number
-        let value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
-        e.target.value = value;
-        
-        // Check if student number already exists (only if different from current)
-        if (value.length >= 3 && value !== currentStudentNumber) {
-            checkStudentNumberExists(value);
-        }
-    });
-
-    // Handle form submission
-    document.getElementById('studentForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const button = this.querySelector('button[type="submit"]');
-        const originalText = button.innerHTML;
-        
-        // Add debugging
-        console.log('Form data:', Object.fromEntries(formData));
-        console.log('CSRF Token:', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-        
-        button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Mengupdate...';
-        
-        fetch(this.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => {
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            return response.json();
-        })
-        .then(data => {
-            console.log('Response data:', data);
-            
-            if (data.success) {
-                showAlert('success', 'Data siswa berhasil diupdate!');
-                setTimeout(() => {
-                    window.location.href = '{{ route("students.index") }}';
-                }, 1500);
-            } else {
-                showAlert('error', data.message || 'Terjadi kesalahan');
-                if (data.errors) {
-                    displayValidationErrors(data.errors);
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Fetch error:', error);
-            showAlert('error', 'Terjadi kesalahan sistem: ' + error.message);
-        })
-        .finally(() => {
-            button.disabled = false;
-            button.innerHTML = originalText;
+    if (studentNumberInput) {
+        studentNumberInput.addEventListener('input', function(e) {
+            // Allow alphanumeric characters for student number
+            let value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
+            e.target.value = value;
         });
-    });
+    }
+
+    // Auto-format phone input
+    const phoneInput = document.getElementById('phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            // Remove non-numeric characters
+            let value = e.target.value.replace(/\D/g, '');
+            e.target.value = value;
+        });
+    }
 
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
         if (e.ctrlKey && e.key === 's') {
             e.preventDefault();
-            document.getElementById('studentForm').dispatchEvent(new Event('submit'));
+            document.getElementById('studentForm').submit();
         }
         
         if (e.key === 'Escape') {
@@ -287,88 +235,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
-function checkStudentNumberExists(studentNumber) {
-    fetch(`/api/students/check-student-number?student_number=${studentNumber}&exclude={{ $student->id }}`)
-        .then(response => response.json())
-        .then(data => {
-            const studentNumberInput = document.getElementById('student_number');
-            if (data.exists) {
-                studentNumberInput.classList.add('is-invalid');
-                showFieldError('student_number', 'Nomor induk siswa sudah digunakan');
-            } else {
-                studentNumberInput.classList.remove('is-invalid');
-                hideFieldError('student_number');
-            }
-        })
-        .catch(error => {
-            console.error('Error checking student number:', error);
-        });
-}
-
-function displayValidationErrors(errors) {
-    // Clear previous errors
-    document.querySelectorAll('.is-invalid').forEach(el => {
-        el.classList.remove('is-invalid');
-    });
-    document.querySelectorAll('.invalid-feedback').forEach(el => {
-        el.remove();
-    });
-
-    // Display new errors
-    for (const [field, messages] of Object.entries(errors)) {
-        const input = document.getElementById(field);
-        if (input) {
-            input.classList.add('is-invalid');
-            showFieldError(field, messages[0]);
-        }
-    }
-}
-
-function showFieldError(fieldId, message) {
-    const field = document.getElementById(fieldId);
-    if (field) {
-        field.classList.add('is-invalid');
-        
-        // Remove existing error message
-        const existingError = field.parentNode.querySelector('.invalid-feedback');
-        if (existingError) {
-            existingError.remove();
-        }
-        
-        // Add new error message
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'invalid-feedback';
-        errorDiv.textContent = message;
-        field.parentNode.appendChild(errorDiv);
-    }
-}
-
-function hideFieldError(fieldId) {
-    const field = document.getElementById(fieldId);
-    if (field) {
-        field.classList.remove('is-invalid');
-        const errorDiv = field.parentNode.querySelector('.invalid-feedback');
-        if (errorDiv) {
-            errorDiv.remove();
-        }
-    }
-}
-
-function showAlert(type, message) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    
-    const container = document.querySelector('.container-fluid');
-    container.insertBefore(alertDiv, container.firstChild);
-    
-    setTimeout(() => {
-        alertDiv.remove();
-    }, 5000);
-}
 </script>
 @endpush
