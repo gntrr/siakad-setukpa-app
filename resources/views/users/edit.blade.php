@@ -68,11 +68,11 @@
                                         <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>
                                             Admin - Akses penuh ke sistem
                                         </option>
-                                        <option value="teacher" {{ old('role', $user->role) == 'teacher' ? 'selected' : '' }}>
-                                            Teacher - Dapat mengelola nilai mahasiswa
+                                        <option value="dosen" {{ old('role', $user->role) == 'dosen' ? 'selected' : '' }}>
+                                            Dosen - Dapat mengelola nilai mahasiswa
                                         </option>
-                                        <option value="student" {{ old('role', $user->role) == 'student' ? 'selected' : '' }}>
-                                            Student - Dapat melihat nilai sendiri
+                                        <option value="manajemen" {{ old('role', $user->role) == 'manajemen' ? 'selected' : '' }}>
+                                            Manajemen/Staff - Dapat mengelola data mahasiswa
                                         </option>
                                     </select>
                                     @if($user->id === auth()->id())
@@ -110,12 +110,13 @@
                             <div class="card-header">
                                 <h6 class="mb-0">
                                     <button class="btn btn-link text-decoration-none p-0" type="button" 
-                                            data-toggle="collapse" data-target="#passwordSection">
+                                            id="passwordToggle">
                                         <i class="fas fa-key"></i> Ubah Password
+                                        <i class="fas fa-chevron-down ml-2" id="passwordChevron"></i>
                                     </button>
                                 </h6>
                             </div>
-                            <div class="collapse" id="passwordSection">
+                            <div id="passwordSection" style="display: none;">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-6">
@@ -218,8 +219,8 @@
                         </ul>
                     </div>
                     
-                    <div class="role-info" data-role="teacher" style="display: none;">
-                        <h6 class="font-weight-bold text-warning">Teacher</h6>
+                    <div class="role-info" data-role="dosen" style="display: none;">
+                        <h6 class="font-weight-bold text-warning">Dosen</h6>
                         <ul class="list-unstyled small">
                             <li><i class="fas fa-check text-success"></i> Melihat data mahasiswa</li>
                             <li><i class="fas fa-check text-success"></i> Mengelola nilai mahasiswa</li>
@@ -230,15 +231,15 @@
                         </ul>
                     </div>
                     
-                    <div class="role-info" data-role="student" style="display: none;">
-                        <h6 class="font-weight-bold text-info">Student</h6>
+                    <div class="role-info" data-role="manajemen" style="display: none;">
+                        <h6 class="font-weight-bold text-info">Manajemen/Staff</h6>
                         <ul class="list-unstyled small">
-                            <li><i class="fas fa-check text-success"></i> Melihat nilai sendiri</li>
+                            <li><i class="fas fa-check text-success"></i> Mengelola data mahasiswa</li>
+                            <li><i class="fas fa-check text-success"></i> Melihat laporan</li>
                             <li><i class="fas fa-check text-success"></i> Update profil sendiri</li>
-                            <li><i class="fas fa-check text-success"></i> Melihat notifikasi</li>
-                            <li><i class="fas fa-times text-danger"></i> Mengelola data lain</li>
-                            <li><i class="fas fa-times text-danger"></i> Melihat data mahasiswa lain</li>
+                            <li><i class="fas fa-times text-danger"></i> Mengelola pengguna lain</li>
                             <li><i class="fas fa-times text-danger"></i> Mengelola nilai</li>
+                            <li><i class="fas fa-times text-danger"></i> Mengelola mata pelajaran</li>
                         </ul>
                     </div>
                     
@@ -256,13 +257,40 @@
 
 @push('scripts')
 <script>
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function() {
+    // Password section toggle
+    const passwordToggle = document.getElementById('passwordToggle');
+    const passwordSection = document.getElementById('passwordSection');
+    const passwordChevron = document.getElementById('passwordChevron');
+    
+    passwordToggle.addEventListener('click', function() {
+        if (passwordSection.style.display === 'none') {
+            passwordSection.style.display = 'block';
+            passwordChevron.classList.remove('fa-chevron-down');
+            passwordChevron.classList.add('fa-chevron-up');
+        } else {
+            passwordSection.style.display = 'none';
+            passwordChevron.classList.remove('fa-chevron-up');
+            passwordChevron.classList.add('fa-chevron-down');
+        }
+    });
+
     // Show role information based on selection
     function showRoleInfo() {
-        const selectedRole = $('#role').val();
-        $('.role-info').hide();
+        const selectedRole = document.getElementById('role').value;
+        const roleInfos = document.querySelectorAll('.role-info');
+        
+        // Hide all role info sections
+        roleInfos.forEach(function(info) {
+            info.style.display = 'none';
+        });
+        
+        // Show selected role info
         if (selectedRole) {
-            $(`.role-info[data-role="${selectedRole}"]`).show();
+            const selectedInfo = document.querySelector(`.role-info[data-role="${selectedRole}"]`);
+            if (selectedInfo) {
+                selectedInfo.style.display = 'block';
+            }
         }
     }
     
@@ -270,31 +298,43 @@ $(document).ready(function() {
     showRoleInfo();
     
     // Update role info on change
-    $('#role').on('change', showRoleInfo);
+    document.getElementById('role').addEventListener('change', showRoleInfo);
     
     // Form validation
-    $('form').on('submit', function(e) {
+    document.querySelector('form').addEventListener('submit', function(e) {
         let isValid = true;
         
         // Check required fields
-        $('input[required], select[required]').each(function() {
-            if (!$(this).val()) {
+        const requiredFields = document.querySelectorAll('input[required], select[required]');
+        requiredFields.forEach(function(field) {
+            if (!field.value) {
                 isValid = false;
-                $(this).addClass('is-invalid');
+                field.classList.add('is-invalid');
             } else {
-                $(this).removeClass('is-invalid');
+                field.classList.remove('is-invalid');
             }
         });
         
         // Check password confirmation
-        const password = $('#password').val();
-        const passwordConfirmation = $('#password_confirmation').val();
+        const password = document.getElementById('password').value;
+        const passwordConfirmation = document.getElementById('password_confirmation').value;
         
         if (password && password !== passwordConfirmation) {
             isValid = false;
-            $('#password_confirmation').addClass('is-invalid');
-            $('#password_confirmation').siblings('.invalid-feedback').remove();
-            $('#password_confirmation').after('<div class="invalid-feedback">Konfirmasi password tidak cocok</div>');
+            const confirmField = document.getElementById('password_confirmation');
+            confirmField.classList.add('is-invalid');
+            
+            // Remove existing feedback
+            const existingFeedback = confirmField.parentNode.querySelector('.invalid-feedback');
+            if (existingFeedback) {
+                existingFeedback.remove();
+            }
+            
+            // Add new feedback
+            const feedback = document.createElement('div');
+            feedback.className = 'invalid-feedback';
+            feedback.textContent = 'Konfirmasi password tidak cocok';
+            confirmField.parentNode.appendChild(feedback);
         }
         
         if (!isValid) {
@@ -304,13 +344,19 @@ $(document).ready(function() {
     });
     
     // Remove invalid class on input
-    $('input, select').on('input change', function() {
-        $(this).removeClass('is-invalid');
+    const inputs = document.querySelectorAll('input, select');
+    inputs.forEach(function(input) {
+        input.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+        input.addEventListener('change', function() {
+            this.classList.remove('is-invalid');
+        });
     });
     
     // Password strength indicator
-    $('#password').on('input', function() {
-        const password = $(this).val();
+    document.getElementById('password').addEventListener('input', function() {
+        const password = this.value;
         let strength = 0;
         let feedback = '';
         
@@ -339,9 +385,18 @@ $(document).ready(function() {
                 break;
         }
         
-        $('#password').siblings('.password-strength').remove();
+        // Remove existing strength indicator
+        const existingStrength = this.parentNode.querySelector('.password-strength');
+        if (existingStrength) {
+            existingStrength.remove();
+        }
+        
+        // Add new strength indicator
         if (password) {
-            $('#password').after('<div class="password-strength">' + feedback + '</div>');
+            const strengthDiv = document.createElement('div');
+            strengthDiv.className = 'password-strength';
+            strengthDiv.innerHTML = feedback;
+            this.parentNode.appendChild(strengthDiv);
         }
     });
 });

@@ -11,6 +11,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ScoreController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -136,9 +137,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Reports Routes (Admin & Management)
     Route::middleware(['role:admin,manajemen'])->prefix('reports')->name('reports.')->group(function () {
-        Route::get('/', function () {
-            return view('reports.index');
-        })->name('index');
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/export', [ReportController::class, 'export'])->name('export');
         
         Route::get('students', function () {
             return view('reports.students');

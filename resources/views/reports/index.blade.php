@@ -99,7 +99,7 @@
     </div>
 
     <!-- Report Content -->
-    @if(request('report_type') == 'students' || !request('report_type'))
+    @if(request('report_type') == 'students' || !request('report_type') || request('report_type') == 'overview')
         <!-- Students Report -->
         <div class="card shadow mb-4" id="students-report">
             <div class="card-header py-3">
@@ -231,7 +231,7 @@
         </div>
     @endif
 
-    @if(request('report_type') == 'subjects' || !request('report_type'))
+    @if(request('report_type') == 'subjects' || !request('report_type') || request('report_type') == 'overview')
         <!-- Subjects Report -->
         <div class="card shadow mb-4" id="subjects-report">
             <div class="card-header py-3">
@@ -299,7 +299,7 @@
         </div>
     @endif
 
-    @if(request('report_type') == 'performance' || !request('report_type'))
+    @if(request('report_type') == 'performance' || !request('report_type') || request('report_type') == 'overview')
         <!-- Performance Charts -->
         <div class="row">
             <div class="col-xl-8 col-lg-7">
@@ -329,132 +329,136 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-$(document).ready(function() {
-    // Initialize DataTables
-    if ($('#studentsTable').length) {
-        $('#studentsTable').DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Indonesian.json"
-            },
-            "pageLength": 25,
-            "order": [[ 5, "desc" ]] // Sort by average score
-        });
+// Wait for DOM to be ready, then check for jQuery
+document.addEventListener('DOMContentLoaded', function() {
+    // Try to initialize with jQuery if available
+    if (typeof window.$ !== 'undefined' && typeof window.jQuery !== 'undefined') {
+        initializeReportsWithJQuery();
+    } else {
+        // Fallback initialization
+        setTimeout(function() {
+            if (typeof window.$ !== 'undefined') {
+                initializeReportsWithJQuery();
+            } else {
+                console.warn('jQuery not available, using vanilla JS fallback');
+                initializeChartsOnly();
+            }
+        }, 1000);
     }
-    
-    if ($('#subjectsTable').length) {
-        $('#subjectsTable').DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Indonesian.json"
-            },
-            "pageLength": 25,
-            "order": [[ 6, "desc" ]] // Sort by average score
-        });
-    }
-    
-    // Initialize date range picker
-    $('#date_range').daterangepicker({
-        locale: {
-            format: 'YYYY-MM-DD',
-            separator: ' to ',
-            applyLabel: 'Terapkan',
-            cancelLabel: 'Batal',
-            fromLabel: 'Dari',
-            toLabel: 'Sampai',
-            customRangeLabel: 'Custom',
-            weekLabel: 'W',
-            daysOfWeek: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
-            monthNames: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-            firstDay: 1
-        },
-        autoUpdateInput: false
-    });
-    
-    $('#date_range').on('apply.daterangepicker', function(ev, picker) {
-        $(this).val(picker.startDate.format('YYYY-MM-DD') + ' to ' + picker.endDate.format('YYYY-MM-DD'));
-    });
-    
-    $('#date_range').on('cancel.daterangepicker', function(ev, picker) {
-        $(this).val('');
-    });
-    
-    // Initialize charts
-    initializeCharts();
 });
 
-function initializeCharts() {
-    // Performance Chart
-    if ($('#performanceChart').length) {
-        const ctx = document.getElementById('performanceChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: {!! json_encode($performanceLabels ?? []) !!},
-                datasets: [{
-                    label: 'Rata-rata Nilai',
-                    data: {!! json_encode($performanceData ?? []) !!},
-                    borderColor: 'rgb(75, 192, 192)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100
-                    }
+function initializeReportsWithJQuery() {
+    $(document).ready(function() {
+        try {
+            // Initialize DataTables
+            if (typeof $.fn.DataTable !== 'undefined') {
+                if ($('#studentsTable').length) {
+                    $('#studentsTable').DataTable({
+                        "pageLength": 25,
+                        "order": [[ 5, "desc" ]]
+                    });
+                }
+                
+                if ($('#subjectsTable').length) {
+                    $('#subjectsTable').DataTable({
+                        "pageLength": 25,
+                        "order": [[ 6, "desc" ]]
+                    });
                 }
             }
-        });
-    }
-    
-    // Grade Distribution Chart
-    if ($('#gradeChart').length) {
-        const ctx2 = document.getElementById('gradeChart').getContext('2d');
-        new Chart(ctx2, {
-            type: 'doughnut',
-            data: {
-                labels: {!! json_encode($gradeLabels ?? ['A', 'B', 'C', 'D', 'E']) !!},
-                datasets: [{
-                    data: {!! json_encode($gradeData ?? [10, 20, 30, 25, 15]) !!},
-                    backgroundColor: [
-                        '#28a745',
-                        '#ffc107',
-                        '#17a2b8',
-                        '#fd7e14',
-                        '#dc3545'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
+            
+            // Initialize charts
+            initializeChartsOnly();
+            
+        } catch (error) {
+            console.error('Error initializing reports:', error);
+        }
+    });
+}
+
+function initializeChartsOnly() {
+    try {
+        // Performance Chart
+        const performanceChart = document.getElementById('performanceChart');
+        if (performanceChart && typeof Chart !== 'undefined') {
+            const ctx = performanceChart.getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: {!! json_encode($performanceLabels ?? []) !!},
+                    datasets: [{
+                        label: 'Rata-rata Nilai',
+                        data: {!! json_encode($performanceData ?? []) !!},
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+        
+        // Grade Distribution Chart
+        const gradeChart = document.getElementById('gradeChart');
+        if (gradeChart && typeof Chart !== 'undefined') {
+            const ctx2 = gradeChart.getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: {!! json_encode($gradeLabels ?? ['A', 'B', 'C', 'D', 'E']) !!},
+                    datasets: [{
+                        data: {!! json_encode($gradeData ?? [10, 20, 30, 25, 15]) !!},
+                        backgroundColor: [
+                            '#28a745',
+                            '#ffc107',
+                            '#17a2b8',
+                            '#fd7e14',
+                            '#dc3545'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error initializing charts:', error);
     }
 }
 
 function exportReport() {
-    const reportType = $('#report_type').val();
-    const filters = $('#filterForm').serialize();
-    
-    window.open(`/reports/export?${filters}`, '_blank');
+    try {
+        const filterForm = document.getElementById('filterForm');
+        const filters = new URLSearchParams(new FormData(filterForm)).toString();
+        window.open(`/reports/export?${filters}`, '_blank');
+    } catch (error) {
+        console.error('Error exporting report:', error);
+        alert('Error saat mengekspor laporan. Silakan coba lagi.');
+    }
 }
 
 function printReport() {
-    window.print();
+    try {
+        window.print();
+    } catch (error) {
+        console.error('Error printing report:', error);
+        alert('Error saat mencetak laporan. Silakan coba lagi.');
+    }
 }
-
-// Auto-refresh report data every 5 minutes
-setInterval(function() {
-    // You can implement auto-refresh logic here if needed
-}, 300000);
 </script>
 @endpush
 
@@ -487,6 +491,26 @@ setInterval(function() {
 .card-header {
     background-color: #f8f9fc;
     border-bottom: 1px solid #e3e6f0;
+}
+
+/* DataTables styling */
+.dataTables_wrapper {
+    font-size: 14px;
+}
+
+.dataTables_filter {
+    margin-bottom: 1rem;
+}
+
+.dataTables_length {
+    margin-bottom: 1rem;
+}
+
+/* Chart container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
 }
 </style>
 @endpush

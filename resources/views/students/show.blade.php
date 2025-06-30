@@ -21,11 +21,11 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex gap-2">
-                            <a href="{{ route('students.index') }}" class="btn btn-secondary">
+                            <a href="{{ route('students.index') }}" class="btn btn-secondary mr-2">
                                 <i class="fas fa-arrow-left mr-2"></i>Kembali
                             </a>
                             @can('update', $student)
-                            <a href="{{ route('students.edit', $student) }}" class="btn btn-warning">
+                            <a href="{{ route('students.edit', $student) }}" class="btn btn-warning mr-2">
                                 <i class="fas fa-edit mr-2"></i>Edit Data
                             </a>
                             @endcan
@@ -304,19 +304,7 @@
                                         @endcanany
                                     </tr>
                                     @endforeach
-                                </tbody>
-                                                @endcan
-                                                @can('delete', $score)
-                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDeleteScore({{ $score->id }})" title="Hapus">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                                @endcan
-                                            </div>
-                                        </td>
-                                        @endcanany
-                                    </tr>
-                                    @endforeach
-                                </tbody>
+                                </tbody>                                                
                             </table>
                         </div>
                     @else

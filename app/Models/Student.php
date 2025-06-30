@@ -12,12 +12,20 @@ class Student extends Model
     protected $fillable = [
         'student_number',
         'name',
+        'email',
         'gender',
         'birth_date',
+        'phone',
+        'status',
+        'address',
     ];
 
     protected $casts = [
         'birth_date' => 'date',
+    ];
+
+    protected $attributes = [
+        'status' => 'aktif',
     ];
 
     // Relasi ke tabel scores

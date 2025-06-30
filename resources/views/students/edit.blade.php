@@ -1,21 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- Debug Information -->
-<!-- @if(config('app.debug'))
-<div class="container-fluid">
-    <div class="alert alert-info">
-        <strong>Debug Info:</strong><br>
-        Student ID: {{ $student->id ?? 'N/A' }}<br>
-        Student Number: {{ $student->student_number ?? 'N/A' }}<br>
-        Student Name: {{ $student->name ?? 'N/A' }}<br>
-        Student Gender: {{ $student->gender ?? 'N/A' }}<br>
-        Student Birth Date: {{ $student->birth_date ?? 'N/A' }}<br>
-        Birth Date Formatted: {{ $student->birth_date ? \Carbon\Carbon::parse($student->birth_date)->format('Y-m-d') : 'N/A' }}
-    </div>
-</div>
-@endif -->
-
 <div class="container-fluid">
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -35,6 +20,17 @@
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Formulir Edit Data Siswa</h6>
                 </div>
+                <!-- Error Messages -->
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <h4 class="alert-heading">Terjadi Kesalahan!</h4>
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="card-body">
                     <form id="studentForm" method="POST" action="{{ route('students.update', $student->id) }}">
                         @csrf

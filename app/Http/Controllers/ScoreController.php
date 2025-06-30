@@ -436,7 +436,7 @@ class ScoreController extends Controller
     /**
      * Get student report card
      */
-    public function studentReport(Student $student): JsonResponse
+    public function studentReport(Student $student)
     {
         $this->authorize('view', $student);
 
@@ -449,19 +449,25 @@ class ScoreController extends Controller
         $subjectCount = $scores->count();
         $averageScore = $subjectCount > 0 ? round($totalScore / $subjectCount, 2) : 0;
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'student' => $student,
-                'scores' => $scores,
-                'statistics' => [
-                    'total_subjects' => $subjectCount,
-                    'average_score' => $averageScore,
-                    'total_score' => $totalScore,
-                ]
-            ],
-            'message' => 'Student report retrieved successfully'
-        ]);
+        // For API requests, return JSON response
+        if (request()->expectsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'student' => $student,
+                    'scores' => $scores,
+                    'statistics' => [
+                        'total_subjects' => $subjectCount,
+                        'average_score' => $averageScore,
+                        'total_score' => $totalScore,
+                    ]
+                ],
+                'message' => 'Student report retrieved successfully'
+            ]);
+        }
+
+        // For web requests, return a view
+        return view('students.report', compact('student', 'scores', 'totalScore', 'subjectCount', 'averageScore'));
     }
 
     /**

@@ -47,8 +47,17 @@ class StudentRequest extends FormRequest
                 Rule::unique('students')->ignore($studentId)
             ],
             'name' => ['required', 'string', 'max:100'],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('students')->ignore($studentId)
+            ],
             'gender' => ['required', Rule::in(['Laki-laki', 'Perempuan'])],
             'birth_date' => ['required', 'date', 'before:today'],
+            'phone' => ['nullable', 'string', 'max:15'],
+            'status' => ['nullable', 'string', 'max:50'],
+            'address' => ['nullable', 'string', 'max:255'],
         ];
     }
 
@@ -61,11 +70,17 @@ class StudentRequest extends FormRequest
             'student_number.required' => 'Nomor induk siswa wajib diisi.',
             'student_number.unique' => 'Nomor induk siswa sudah digunakan.',
             'name.required' => 'Nama siswa wajib diisi.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan.',
             'gender.required' => 'Jenis kelamin wajib dipilih.',
             'gender.in' => 'Jenis kelamin tidak valid.',
             'birth_date.required' => 'Tanggal lahir wajib diisi.',
             'birth_date.date' => 'Format tanggal tidak valid.',
             'birth_date.before' => 'Tanggal lahir harus sebelum hari ini.',
+            'phone.max' => 'Nomor telepon maksimal 15 karakter.',
+            'status.max' => 'Status maksimal 50 karakter.',
+            'address.max' => 'Alamat maksimal 255 karakter.',
         ];
     }
 }

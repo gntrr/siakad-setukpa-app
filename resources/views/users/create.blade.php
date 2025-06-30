@@ -91,8 +91,8 @@
                                         <option value="dosen" {{ old('role') == 'dosen' ? 'selected' : '' }}>
                                             Dosen
                                         </option>
-                                        <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>
-                                            Staff
+                                        <option value="manajemen" {{ old('role') == 'manajemen' ? 'selected' : '' }}>
+                                            Manajemen/Staff
                                         </option>
                                     </select>
                                     @error('role')

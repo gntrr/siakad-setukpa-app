@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subject;
-use App\Http\Requests\SubjectRequest;
 use Illuminate\Http\Request;
+use App\Http\Requests\SubjectRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use App\Http\Traits\ApiResponseTrait;
 
 class SubjectController extends Controller
 {
+    use ApiResponseTrait;
+
     /**
      * Display a listing of the resource.
      */
@@ -59,7 +62,7 @@ class SubjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(SubjectRequest $request): JsonResponse
+    public function store(SubjectRequest $request)
     {
         try {
             DB::beginTransaction();
@@ -70,11 +73,7 @@ class SubjectController extends Controller
 
             // Check if this is an API request
             if ($this->isApiRequest($request)) {
-                return response()->json([
-                    'success' => true,
-                    'data' => $subject,
-                    'message' => 'Subject created successfully'
-                ]);
+                return $this->apiSuccess($subject, 'Subject created successfully', 201);
             }
 
             // For web requests, redirect to the index page
@@ -85,15 +84,11 @@ class SubjectController extends Controller
             
             // Check if this is an API request
             if ($this->isApiRequest($request)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to create subject',
-                    'error' => $e->getMessage()
-                ], 500);
+                return $this->apiError('Failed to create subject', ['error' => $e->getMessage()], 500);
             }
 
             // Web request error handling
-            return redirect()->back()->withErrors(['error' => 'Failed to create subject: ' . $e->getMessage()]);
+            return redirect()->back()->withInput()->with('error', 'Failed to create subject: ' . $e->getMessage());
         }
     }
 
@@ -110,15 +105,11 @@ class SubjectController extends Controller
      */
     public function show(Subject $subject)
     {
-        if (request()->expectsJson()) {
+        if ($this->isApiRequest()) {
             // Load related scores with student and teacher information
             $subject->load(['scores.student:id,student_number,name', 'scores.teacher:id,name']);
 
-            return response()->json([
-                'success' => true,
-                'data' => $subject,
-                'message' => 'Subject retrieved successfully'
-            ]);
+            return $this->apiSuccess($subject, 'Subject retrieved successfully');
         }
 
         return view('subjects.show', compact('subject'));
@@ -135,9 +126,17 @@ class SubjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(SubjectRequest $request, Subject $subject): JsonResponse
+    public function update(SubjectRequest $request, Subject $subject)
     {
-        $this->authorize('update', $subject);
+        try {
+            $this->authorize('update', $subject);
+        } catch (\Exception $e) {
+            if ($this->isApiRequest($request)) {
+                return $this->apiError('Tidak memiliki izin untuk mengupdate mata pelajaran', ['error' => $e->getMessage()], 403);
+            }
+            
+            return redirect()->back()->with('error', 'Tidak memiliki izin untuk mengupdate mata pelajaran');
+        }
 
         try {
             DB::beginTransaction();
@@ -148,11 +147,7 @@ class SubjectController extends Controller
 
             // Check if this is an API request
             if ($this->isApiRequest($request)) {
-                return response()->json([
-                    'success' => true,
-                    'data' => $subject->fresh(),
-                    'message' => 'Subject updated successfully'
-                ]);
+                return $this->apiSuccess($subject->fresh(), 'Subject updated successfully');
             }
 
             // For web requests, redirect to the index page
@@ -163,38 +158,33 @@ class SubjectController extends Controller
             
             // Check if this is an API request
             if ($this->isApiRequest($request)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to update subject',
-                    'error' => $e->getMessage()
-                ], 500);
+                return $this->apiError('Failed to update subject', ['error' => $e->getMessage()], 500);
             }
 
             // Web request error handling
-            return redirect()->back()->withErrors(['error' => 'Failed to update subject: ' . $e->getMessage()]);
+            return redirect()->back()->withInput()->with('error', 'Failed to update subject: ' . $e->getMessage());
         }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Subject $subject): JsonResponse
+    public function destroy(Subject $subject)
     {
         try {
             DB::beginTransaction();
 
             // Check if subject has scores
             if ($subject->scores()->exists()) {
-                // API request response
-                if (request()->expectsJson()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Cannot delete subject with existing scores. Please delete scores first.'
-                    ], 422);
+                DB::rollBack();
+                
+                // Check if this is an API request
+                if ($this->isApiRequest(request())) {
+                    return $this->apiError('Cannot delete subject with existing scores. Please delete scores first.', [], 422);
                 }
 
                 // Web request error handling
-                return redirect()->back()->withErrors(['error' => 'Cannot delete subject with existing scores. Please delete scores first.']);
+                return redirect()->back()->with('error', 'Cannot delete subject with existing scores. Please delete scores first.');
             }
 
             $subject->delete();
@@ -202,11 +192,8 @@ class SubjectController extends Controller
             DB::commit();
 
             // Check if this is an API request
-            if (request()->expectsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Subject deleted successfully'
-                ]);
+            if ($this->isApiRequest(request())) {
+                return $this->apiSuccess(null, 'Subject deleted successfully');
             }
 
             // For web requests, redirect to the index page
@@ -216,16 +203,12 @@ class SubjectController extends Controller
             DB::rollBack();
             
             // Check if this is an API request
-            if (request()->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to delete subject',
-                    'error' => $e->getMessage()
-                ], 500);
+            if ($this->isApiRequest(request())) {
+                return $this->apiError('Failed to delete subject', ['error' => $e->getMessage()], 500);
             }
 
             // Web request error handling
-            return redirect()->back()->withErrors(['error' => 'Failed to delete subject: ' . $e->getMessage()]);
+            return redirect()->back()->with('error', 'Failed to delete subject: ' . $e->getMessage());
         }
     }
 

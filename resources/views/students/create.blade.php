@@ -20,6 +20,17 @@
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Formulir Data Siswa</h6>
                 </div>
+                <!-- Error Messages -->
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <h4 class="alert-heading">Terjadi Kesalahan!</h4>
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="card-body">
                     <form id="studentForm" method="POST" action="{{ route('students.store') }}">
                         @csrf

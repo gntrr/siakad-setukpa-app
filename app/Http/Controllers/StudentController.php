@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Traits\ApiResponseTrait;
+use Illuminate\Support\Facades\Log;
 
 class StudentController extends Controller
 {
@@ -109,6 +110,10 @@ class StudentController extends Controller
             return redirect()->route('students.index')->with('success', 'Student created successfully');
 
         } catch (\Exception $e) {
+            Log::error('Failed to create student: ' . $e->getMessage(), [
+                'request_data' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
             DB::rollBack();
             
             // Check if this is an API request
@@ -133,6 +138,9 @@ class StudentController extends Controller
             return $this->apiSuccess($student, 'Student retrieved successfully');
         }
 
+        // Load related scores with subject and teacher information
+        $student->load(['scores.subject', 'scores.teacher:id,name']);
+
         return view('students.show', compact('student'));
     }
 
@@ -152,14 +160,11 @@ class StudentController extends Controller
         try {
             $this->authorize('update', $student);
         } catch (\Exception $e) {
-            \Log::error('Authorization failed for student update: ' . $e->getMessage());
+            Log::error('Authorization failed for student update: ' . $e->getMessage());
             
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tidak memiliki izin untuk mengupdate data siswa',
-                    'error' => $e->getMessage()
-                ], 403);
+            // Check if this is an API request
+            if ($this->isApiRequest($request)) {
+                return $this->apiError('Tidak memiliki izin untuk mengupdate data siswa', ['error' => $e->getMessage()], 403);
             }
             
             return redirect()->back()->with('error', 'Tidak memiliki izin untuk mengupdate data siswa');
@@ -168,30 +173,17 @@ class StudentController extends Controller
         try {
             DB::beginTransaction();
 
-            \Log::info('Updating student with data: ', $request->validated());
+            Log::info('Updating student with data: ', $request->validated());
             
             $student->update($request->validated());
 
             DB::commit();
 
-            \Log::info('Student updated successfully: ' . $student->id);
+            Log::info('Student updated successfully: ' . $student->id);
 
             // Check if this is an API request
             if ($this->isApiRequest($request)) {
-                return response()->json([
-                    'success' => true,
-                    'data' => $student->fresh(),
-                    'message' => 'Student updated successfully'
-                ]);
-            }
-
-            // For web requests, return JSON for AJAX
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'data' => $student->fresh(),
-                    'message' => 'Student updated successfully'
-                ]);
+                return $this->apiSuccess($student->fresh(), 'Student updated successfully');
             }
 
             // For regular web requests, redirect
@@ -200,7 +192,7 @@ class StudentController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             
-            \Log::error('Failed to update student: ' . $e->getMessage(), [
+            Log::error('Failed to update student: ' . $e->getMessage(), [
                 'student_id' => $student->id,
                 'request_data' => $request->all(),
                 'trace' => $e->getTraceAsString()
@@ -208,20 +200,7 @@ class StudentController extends Controller
             
             // Check if this is an API request
             if ($this->isApiRequest($request)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to update student',
-                    'error' => $e->getMessage()
-                ], 500);
-            }
-
-            // For web requests (AJAX or regular)
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to update student',
-                    'error' => $e->getMessage()
-                ], 500);
+                return $this->apiError('Failed to update student', ['error' => $e->getMessage()], 500);
             }
 
             // For regular web requests, redirect with error
@@ -232,36 +211,50 @@ class StudentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Student $student): JsonResponse
+    public function destroy(Student $student)
     {
         try {
             DB::beginTransaction();
 
             // Check if student has scores
             if ($student->scores()->exists()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Cannot delete student with existing scores. Please delete scores first.'
-                ], 422);
+                DB::rollBack();
+                
+                // Check if this is an API request
+                if ($this->isApiRequest(request())) {
+                    return $this->apiError('Cannot delete student with existing scores. Please delete scores first.', [], 422);
+                }
+
+                // Web request error handling
+                return redirect()->back()->with('error', 'Cannot delete student with existing scores. Please delete scores first.');
             }
 
             $student->delete();
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Student deleted successfully'
-            ]);
+            // Check if this is an API request
+            if ($this->isApiRequest(request())) {
+                return $this->apiSuccess(null, 'Student deleted successfully');
+            }
+
+            // For web requests, redirect to the index page
+            return redirect()->route('students.index')->with('success', 'Student deleted successfully');
 
         } catch (\Exception $e) {
+            Log::error('Failed to delete student: ' . $e->getMessage(), [
+                'student_id' => $student->id,
+                'trace' => $e->getTraceAsString()
+            ]);
             DB::rollBack();
             
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete student',
-                'error' => $e->getMessage()
-            ], 500);
+            // Check if this is an API request
+            if ($this->isApiRequest(request())) {
+                return $this->apiError('Failed to delete student', ['error' => $e->getMessage()], 500);
+            }
+
+            // For web requests, redirect with error message
+            return redirect()->back()->with('error', 'Failed to delete student: ' . $e->getMessage());
         }
     }
 
