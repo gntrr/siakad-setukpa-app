@@ -191,9 +191,9 @@ document.addEventListener('DOMContentLoaded', function() {
         let value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
         e.target.value = value;
         
-        // Check if student number already exists
-        if (value.length >= 3) {
-            // checkStudentNumberExists(value);
+        // Check if NIM already exists
+        if (value.length >= 4) {
+            checkNIMExists(value);
         }
     });
 
