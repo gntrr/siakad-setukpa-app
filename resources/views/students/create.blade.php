@@ -191,9 +191,9 @@ document.addEventListener('DOMContentLoaded', function() {
         let value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
         e.target.value = value;
         
-        // Check if NIM already exists
-        if (value.length >= 4) {
-            checkNIMExists(value);
+        // Check if student number already exists
+        if (value.length >= 3) {
+            // checkStudentNumberExists(value);
         }
     });
 
@@ -260,6 +260,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// function checkNIMExists(nim) {
+//     fetch(`/api/students/check-nim?nim=${nim}`)
+//         .then(response => response.json())
+//         .then(data => {
+//             const nimInput = document.getElementById('nim');
+//             if (data.exists) {
+//                 nimInput.classList.add('is-invalid');
+//                 showFieldError('nim', 'NIM sudah digunakan');
+//             } else {
+//                 nimInput.classList.remove('is-invalid');
+//                 hideFieldError('nim');
+//             }
+//         })
+//         .catch(error => {
+//             console.error('Error checking NIM:', error);
+//         });
+// }
 // function checkNIMExists(nim) {
 //     fetch(`/api/students/check-nim?nim=${nim}`)
 //         .then(response => response.json())
