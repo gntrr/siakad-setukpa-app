@@ -42,5 +42,20 @@ class UserSeeder extends Seeder
             'password' => bcrypt('password123'),
             'role' => 'manajemen',
         ]);
+
+        // Siswa
+        \App\Models\User::create([
+            'name' => 'Andi Pratama',
+            'email' => 'andi.siswa@setukpa.ac.id',
+            'password' => bcrypt('password123'),
+            'role' => 'siswa',
+        ]);
+
+        \App\Models\User::create([
+            'name' => 'Maya Sari',
+            'email' => 'maya.siswa@setukpa.ac.id',
+            'password' => bcrypt('password123'),
+            'role' => 'siswa',
+        ]);
     }
 }

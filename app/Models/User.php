@@ -74,4 +74,9 @@ class User extends Authenticatable
     {
         return $this->role === 'manajemen';
     }
+
+    public function isSiswa()
+    {
+        return $this->role === 'siswa';
+    }
 }

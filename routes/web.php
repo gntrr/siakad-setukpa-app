@@ -84,8 +84,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('subjects/statistics', [SubjectController::class, 'statistics'])->name('subjects.statistics');
     });
 
-    // Subject View Routes (All authenticated users)
-    Route::middleware(['role:admin,manajemen,dosen'])->group(function () {
+    // Subject View Routes (All authenticated users including siswa)
+    Route::middleware(['role:admin,manajemen,dosen,siswa'])->group(function () {
         Route::get('subjects', [SubjectController::class, 'index'])->name('subjects.index');
         Route::get('subjects/{subject}', [SubjectController::class, 'show'])->name('subjects.show');
         Route::get('subjects/select/options', [SubjectController::class, 'forSelect'])->name('subjects.select');
@@ -100,13 +100,20 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('scores/{score}', [ScoreController::class, 'destroy'])->name('scores.destroy');
     });
 
-    // Score View Routes (All authenticated users)
+    // Score View Routes (All authenticated users including siswa, but limited for siswa)
     Route::middleware(['role:admin,manajemen,dosen'])->group(function () {
         Route::get('scores/statistics', [ScoreController::class, 'statistics'])->name('scores.statistics');
         Route::get('scores/pending', [ScoreController::class, 'pending'])->name('scores.pending');
         Route::get('scores', [ScoreController::class, 'index'])->name('scores.index');
         Route::get('scores/{score}', [ScoreController::class, 'show'])->name('scores.show');
         Route::get('students/{student}/report', [ScoreController::class, 'studentReport'])->name('students.report');
+    });
+
+    // Routes khusus untuk siswa - hanya melihat mata pelajaran
+    Route::middleware(['role:siswa'])->group(function () {
+        Route::get('schedule', function () {
+            return view('schedule.index');
+        })->name('schedule.index');
     });
 
     // Score Validation Routes (Admin & Management)

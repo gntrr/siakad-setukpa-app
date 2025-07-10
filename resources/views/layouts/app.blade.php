@@ -385,6 +385,17 @@
             </div>
             @endcan
 
+            <!-- Menu khusus untuk siswa -->
+            @if(auth()->user()->isSiswa())
+            <!-- Jadwal Pelajaran (Siswa) -->
+            <div class="nav-item">
+                <a class="nav-link {{ request()->routeIs('schedule.*') ? 'active' : '' }}" href="{{ route('schedule.index') }}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Jadwal Pelajaran</span>
+                </a>
+            </div>
+            @endif
+
             <!-- Notifications -->
             <div class="nav-item">
                 <a class="nav-link {{ request()->routeIs('notifications.*') ? 'active' : '' }}" href="{{ route('notifications.index') }}">

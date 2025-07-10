@@ -62,6 +62,19 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('validate-scores', function (User $user) {
             return $user->isAdmin() || $user->isManajemen();
         });
+
+        // Gates untuk siswa - hanya bisa melihat mata pelajaran dan jadwal
+        Gate::define('view-subjects', function (User $user) {
+            return $user->isAdmin() || $user->isManajemen() || $user->isDosen() || $user->isSiswa();
+        });
+
+        Gate::define('view-schedule', function (User $user) {
+            return $user->isAdmin() || $user->isManajemen() || $user->isDosen() || $user->isSiswa();
+        });
+
+        Gate::define('view-own-scores', function (User $user) {
+            return $user->isSiswa();
+        });
     }
 
     /**

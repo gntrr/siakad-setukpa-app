@@ -37,7 +37,7 @@ SIAKAD SETUKPA (Sistem Informasi Akademik - Sekolah Pembentukan Perwira) adalah 
   - Laporan kartu hasil studi
 
 - **👥 Manajemen Pengguna**
-  - Role-based access control (Admin, Manajemen, Dosen)
+  - Role-based access control (Admin, Manajemen, Dosen, Siswa)
   - Sistem autentikasi yang aman
   - Profil pengguna yang dapat dikustomisasi
 
@@ -131,6 +131,7 @@ Setelah seeding, Anda dapat login dengan akun berikut:
 | Admin | admin@setukpa.com | password |
 | Manajemen | manager@setukpa.com | password |
 | Dosen | dosen@setukpa.com | password |
+| Siswa | siswa@setukpa.com | password |
 
 ## 📖 Panduan Penggunaan
 
@@ -151,6 +152,12 @@ Setelah seeding, Anda dapat login dengan akun berikut:
 - Melihat data siswa yang diampu
 - Mengupdate nilai yang sudah diinput
 - Melihat statistik kelas
+
+### Untuk Siswa
+- Melihat dashboard dengan informasi umum
+- Melihat daftar dan detail mata pelajaran
+- Melihat jadwal pelajaran
+- Mengelola profil pribadi
 
 ## 🔧 Konfigurasi
 

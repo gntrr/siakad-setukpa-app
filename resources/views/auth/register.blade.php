@@ -229,6 +229,7 @@
                             <option value="">Choose Role</option>
                             <option value="dosen" {{ old('role') == 'dosen' ? 'selected' : '' }}>Dosen (Teacher)</option>
                             <option value="manajemen" {{ old('role') == 'manajemen' ? 'selected' : '' }}>Manajemen (Staff)</option>
+                            <option value="siswa" {{ old('role') == 'siswa' ? 'selected' : '' }}>Siswa (Student)</option>
                         </select>
                         <label for="role">Role</label>
                         @error('role')

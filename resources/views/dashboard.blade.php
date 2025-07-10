@@ -187,6 +187,75 @@
         </div>
     </div>
     @endcan
+
+    <!-- Card khusus untuk siswa -->
+    @if(auth()->user()->isSiswa())
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Selamat Datang, {{ auth()->user()->name }}!
+                            </div>
+                            <div class="h6 mb-0 font-weight-bold text-gray-800">
+                                Anda dapat melihat mata pelajaran dan jadwal yang tersedia.
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-graduation-cap fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        @isset($studentData['available_subjects'])
+        <div class="col-xl-4 col-md-6 mb-4 mt-3">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Mata Pelajaran Tersedia
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ $studentData['available_subjects'] }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-book fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endisset
+        
+        <div class="col-xl-4 col-md-6 mb-4 mt-3">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Quick Action
+                            </div>
+                            <div class="mb-2">
+                                <a href="{{ route('subjects.index') }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-book mr-1"></i>Lihat Mata Pelajaran
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-rocket fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 @endsection
 

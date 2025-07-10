@@ -79,8 +79,8 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('subjects/statistics', [SubjectController::class, 'statistics']);
     });
 
-    // Subject View Routes (Admin, Management & Dosen)
-    Route::middleware(['role:admin,manajemen,dosen'])->group(function () {
+    // Subject View Routes (Admin, Management, Dosen & Siswa)
+    Route::middleware(['role:admin,manajemen,dosen,siswa'])->group(function () {
         Route::get('subjects', [SubjectController::class, 'index']);
         Route::get('subjects/{subject}', [SubjectController::class, 'show']);
         Route::get('subjects/select/options', [SubjectController::class, 'forSelect']);

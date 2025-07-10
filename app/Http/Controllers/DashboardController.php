@@ -71,7 +71,15 @@ class DashboardController extends Controller
             }
         }
 
-        return view('dashboard', compact('stats', 'recentNotifications', 'scoreStatistics'));
+        // Data khusus untuk siswa
+        $studentData = [];
+        if ($user->isSiswa()) {
+            // Untuk siswa, tampilkan mata pelajaran yang tersedia
+            $studentData['available_subjects'] = Subject::count();
+            // Bisa ditambahkan jadwal atau informasi lain khusus siswa
+        }
+
+        return view('dashboard', compact('stats', 'recentNotifications', 'scoreStatistics', 'studentData'));
     }
 
     /**
